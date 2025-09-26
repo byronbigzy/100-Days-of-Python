@@ -29,6 +29,8 @@ cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
 
 playerCards = []
 dealerCards = []
+playerScore = 0
+dealerScore = 0
 
 def deal_card(hand):
     card = random.choice(cards)
@@ -47,7 +49,7 @@ deal_card(dealerCards)
 while playerScore < 21 and dealerScore < 21:
     # Calculate User and Computers Scores
     playerScore = sum(playerCards)
-    dealerScore = sum(dealerScore)
+    dealerScore = sum(dealerCards)
 
     # Does the user or computer have blackjack?
     if dealerScore == 21:
@@ -57,17 +59,62 @@ while playerScore < 21 and dealerScore < 21:
         print("The player has blackjack! They win!")
         break
 
-    if playerScore > 21:
+    # Check for ace and adjust score
+    while playerScore > 21:
         if 11 in playerCards:
             playerScore = sum(playerCards)
             if playerScore > 21: 
+                playerCards.remove(11)
+                playerCards.append(1)
+            else:
+                break
 
+    print(f"Your cards: {playerCards}, Your current score: {playerScore}")
+    print(f"Dealer's cards: {dealerCards}")
+    print(f"Dealer's first card: {dealerCards[0]}")
+    choice = input("Would you like to draw another card? 'y' or 'n': ")
 
-print(f"Your cards: {playerCards}, Your current score: {playerScore}")
-print(f"Dealer's cards: {dealerCards}")
-print(f"Dealer's first card: {dealerCards[0]}")
-choice = input("Would you like to draw another card? 'y' or 'n': ")
+    if choice.lower() == 'y':
+        deal_card(playerCards)
+        playerScore = sum(playerCards)
+        # Check for ace and adjust score
+        while playerScore > 21 and 11 in playerCards:
+            playerCards.remove(11)
+            playerCards.append(1)
+            playerScore = sum(playerCards)
+        if playerScore > 21:
+            break
+    elif choice.lower() == 'n':
+        break
 
-if choice.lower() == 'y':
-    deal_card(playerCards)
+# Dealer's turn
+while dealerScore < 17 and playerScore <= 21:
+    deal_card(dealerCards)
+    dealerScore = sum(dealerCards)
+    while dealerScore > 21:
+        if 11 in dealerCards:
+            dealerScore = sum(dealerCards)
+            if dealerScore > 21: 
+                dealerCards.remove(11)
+                dealerCards.append(1)
+            else:
+                break
 
+# Final Results
+# Recalculate scores in case they changed
+playerScore = sum(playerCards)
+dealerScore = sum(dealerCards)
+
+print(f"Your final hand: {playerCards}, Your final score: {playerScore}")
+print(f"Dealer's final hand: {dealerCards}, Dealer's final score: {dealerScore}")
+
+if playerScore > 21:
+    print("You went over 21. You lose!")
+elif dealerScore > 21:
+    print("Dealer went over 21. You win!")
+elif playerScore > dealerScore:
+    print("You win!")
+elif playerScore < dealerScore:
+    print("You lose!")
+else:
+    print("It's a draw!")
