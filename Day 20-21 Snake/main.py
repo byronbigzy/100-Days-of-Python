@@ -75,10 +75,8 @@ while running:
         scoreboard.game_over()
 
     # Check collision with tail
-    for block in snake.body:
-        if block == snake.head:
-            pass
-        elif snake.head.distance(block) < 10:
+    for block in snake.body[1:]:
+        if snake.head.distance(block) < 10:
             running = False
             scoreboard.game_over()
 
