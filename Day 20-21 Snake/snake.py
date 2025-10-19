@@ -14,6 +14,11 @@ class Snake:
         for position in STARTING_POSITIONS:
             self.add_block(position)
 
+    def reset(self):
+        self.body.clear()
+        self.createSnake()
+        self.head = self.body[0]
+
     def add_block(self, position):
         block = Turtle(shape="square")
         block.penup()

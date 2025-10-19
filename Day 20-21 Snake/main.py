@@ -1,3 +1,5 @@
+import random
+
 from turtle import Turtle, Screen
 import time
 from snake import Snake
@@ -70,14 +72,17 @@ while running:
         scoreboard.increase_score()
 
     # Check collison with wall
-    if snake.head.xcor() >= 280 or snake.head.xcor() <= -280 or snake.head.ycor() >= 280 or snake.head.ycor() <= -280:
-        running = False
-        scoreboard.game_over()
+    if snake.head.xcor() >= 280 or snake.head.xcor() <= -280 or snake.head.ycor() >= 270 or snake.head.ycor() <= -280:
+        for block in snake.body:
+            block.goto(5000, 5000)
+        scoreboard.reset()
+        snake.reset()
+
 
     # Check collision with tail
     for block in snake.body[1:]:
         if snake.head.distance(block) < 10:
-            running = False
-            scoreboard.game_over()
+            scoreboard.reset()
+            snake.reset()
 
 screen.exitonclick()
