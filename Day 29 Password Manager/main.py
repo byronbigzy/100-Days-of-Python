@@ -1,15 +1,49 @@
 from tkinter import *
-
+from tkinter import messagebox
+from random import choice, randint, shuffle
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
+def generatePassword():
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
 
+    nr_letters= randint(8,10)
+    nr_symbols = randint(2,4)
+    nr_numbers = randint(2,4)
+
+    paasword_letters = [choice(letters) for _ in range(nr_letters)]
+    paasword_symbols = [choice(symbols) for _ in range(nr_symbols)]
+    paasword_numbers = [choice(numbers) for _ in range(nr_numbers)]
+
+    password_characters = paasword_letters + paasword_symbols + paasword_numbers
+    shuffle(password_characters)
+
+    # Password Generator
+    password = "".join(password_characters)
+    passwordInput.insert(0, password)
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def saveDetails():
-    try:
-        with open("Day 29 Password Manager\passwords.txt", "a") as file:
-            file.write(f"{websiteInput.get()} | {userInput.get()} | {passwordInput.get()}\n") 
-    except FileNotFoundError:
-        file = open("Day 29 Password Manager\passwords.txt", "w")
-        file.write(f"{websiteInput.get()} | {userInput.get()} | {passwordInput.get()}\n") 
+
+    website = websiteInput.get()
+    user = userInput.get()
+    password = passwordInput.get()
+
+    if len(website) == 0 or len(password) == 0:
+        messagebox.showinfo(title="Uh oh!", message="Please don't leave any fields empty")
+        return
+
+    dialog = messagebox.askokcancel("Confirmation", message=f"Saving Details For:\nWebsite: {website}\nEmail/Username: {user}\nPassword: {password}")
+    
+    if dialog:
+        try:
+            with open("Day 29 Password Manager\passwords.txt", "a") as file:
+                file.write(f"{website} | {user} | {password}\n") 
+        except FileNotFoundError:
+            file = open("Day 29 Password Manager\passwords.txt", "w")
+            file.write(f"{website} | {user} | {password}\n") 
+        
+        websiteInput.delete(0, END)
+        passwordInput.delete(0, END)
     # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
@@ -33,7 +67,7 @@ userInput.insert(0, "bigzybyron@gmail.com")
 
 passwordLabel = Label(text="Password:")
 passwordInput = Entry()
-generatePassword = Button(text="Generate Password")
+passwordGenButton = Button(text="Generate Password", command=generatePassword)
 
 addButton = Button(text="Add", command=saveDetails)
 
@@ -46,7 +80,7 @@ userInput.grid(row=2, column=1, columnspan=2, sticky='EW')
 
 passwordLabel.grid(row=3, column=0)
 passwordInput.grid(row=3, column=1, sticky='EW') 
-generatePassword.grid(row=3, column=2, sticky='EW') 
+passwordGenButton.grid(row=3, column=2, sticky='EW') 
 
 addButton.grid(row=4, column=1, columnspan=2, sticky='EW') 
 
