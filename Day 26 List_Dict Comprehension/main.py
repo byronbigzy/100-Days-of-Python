@@ -7,8 +7,14 @@ df = pd.DataFrame(nato_csv)
 
 nato_dict = {row.letter:row.code for (index, row) in df.iterrows()}
 
-name = input("Enter your name: ")
+name = input("Enter your name: ")#
+name_list = []
 
-name_list = [nato_dict[letter.upper()] for letter in name]
+while len(name_list) == 0:
+    try:
+        name_list = [nato_dict[letter.upper()] for letter in name]
+    except KeyError:
+        print("Sorry, only letters in the alphabet please.")
+        name = input("Enter your name: ")
 
 print(name_list)

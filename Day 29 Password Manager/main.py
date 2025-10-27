@@ -1,8 +1,10 @@
 from tkinter import *
 from tkinter import messagebox
 from random import choice, randint, shuffle
+import json
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generatePassword():
+    passwordInput.delete(0, END)
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
@@ -21,6 +23,22 @@ def generatePassword():
     # Password Generator
     password = "".join(password_characters)
     passwordInput.insert(0, password)
+# ---------------------------- SEARCH FOR PASSWORD ------------------------------- #
+def findDetails():
+    search = websiteInput.get().lower()
+    with open("Day 29 Password Manager\passwords.json", "r") as file:
+        data = json.load(file)
+
+        data_keys = [key.lower() for key in data.keys()]
+        if search not in data_keys:
+            messagebox.showinfo(title=f"Error!", detail=f"No details for {search} exist.")
+
+        for website in data:
+            if website.lower() == search:
+                user = data[website]['user']
+                password = data[website]['password']
+                messagebox.showinfo(title=f"Login for {website}", detail=f"Email / Username: {user}\nPassword: {password}")
+
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def saveDetails():
 
@@ -28,6 +46,12 @@ def saveDetails():
     user = userInput.get()
     password = passwordInput.get()
 
+    new_data = {
+        website: {
+            "user": user,
+            "password": password,
+        }
+    }
     if len(website) == 0 or len(password) == 0:
         messagebox.showinfo(title="Uh oh!", message="Please don't leave any fields empty")
         return
@@ -36,14 +60,23 @@ def saveDetails():
     
     if dialog:
         try:
-            with open("Day 29 Password Manager\passwords.txt", "a") as file:
-                file.write(f"{website} | {user} | {password}\n") 
+            with open("Day 29 Password Manager\passwords.json", "r") as file:
+                # Read old data
+                data = json.load(file)
+                # Update old data with new data
+                data.update(new_data)
+            with open("Day 29 Password Manager\passwords.json", "w") as file:
+                # Saving updated data
+                json.dump(data, file, indent=4)
         except FileNotFoundError:
-            file = open("Day 29 Password Manager\passwords.txt", "w")
-            file.write(f"{website} | {user} | {password}\n") 
-        
-        websiteInput.delete(0, END)
-        passwordInput.delete(0, END)
+            with open("Day 29 Password Manager\passwords.json", "w") as file:
+                # Saving updated data
+                json.dump(new_data, file, indent=4)
+        finally:
+                websiteInput.delete(0, END)
+                passwordInput.delete(0, END)
+
+
     # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
@@ -60,6 +93,7 @@ canvas.create_image(100, 100, image=imageLogo)
 websiteLabel = Label(text="Website:")
 websiteInput = Entry()
 websiteInput.focus()
+searchButton = Button(text="Search", command=findDetails)
 
 userLabel = Label(text="Email/Username:")
 userInput = Entry()
@@ -73,7 +107,9 @@ addButton = Button(text="Add", command=saveDetails)
 
 canvas.grid(row=0, column=1)
 websiteLabel.grid(row=1, column=0)
-websiteInput.grid(row=1, column=1, columnspan=2, sticky='EW') 
+websiteInput.grid(row=1, column=1, sticky='EW') 
+searchButton.grid(row=1, column=2, sticky='EW') 
+
 
 userLabel.grid(row=2, column=0)
 userInput.grid(row=2, column=1, columnspan=2, sticky='EW') 
