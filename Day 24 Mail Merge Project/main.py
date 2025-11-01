@@ -1,6 +1,3 @@
-import os
-
-# Get Names
 with open(file="Mail Merge Project Start/Input/Names/invited_names.txt", mode="r") as names:
     list_names = []
     for line in names.readlines():
