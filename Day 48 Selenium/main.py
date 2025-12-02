@@ -12,6 +12,7 @@ driver = webdriver.Chrome(options=chrome_options)
 URL = "https://ozh.github.io/cookieclicker/"
 driver.get(url=URL)
 
+# Potato Ah PC can't load website fast enough
 time.sleep(5)
 driver.find_element(By.ID, value="langSelect-EN").click()
 
